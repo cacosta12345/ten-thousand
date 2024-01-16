@@ -22,7 +22,7 @@ Then I copied the whole test from the terminal including all fails and passes an
 * And it gave me revised code with potential fixes.
 
 ## Prompt 3-5
-* Same as prompt 2. It would pass a few more and I would past the failures to gpt and it would give me more code to test. It eventually got them all passing
+* Same as prompt 2. It would pass a few more and I would paste the failures to gpt and it would give me more code to test. It eventually got them all passing
 
 ## Prompt: 
 * All the tests passed! Thanks chatgpt
