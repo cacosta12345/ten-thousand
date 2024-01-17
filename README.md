@@ -1,4 +1,4 @@
-# LAB - Class 0
+# LAB - Class 07
 
 ## Project: Ten-Thousand
 
@@ -6,7 +6,7 @@
 
 ## Links and Resources
 
-ChatGpt - https://chat.openai.com/share/7197a5d8-9b61-4649-8181-8779d89d51f1
+
 
 ## Setup
 
@@ -29,5 +29,4 @@ Libraries:
 Run: pytest
 
 Tests: 
-    test_calculate_score.py
-    test_roll_dice.py
+    tests/version2
