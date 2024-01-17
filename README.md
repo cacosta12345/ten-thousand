@@ -1,4 +1,4 @@
-# LAB - Class 06
+# LAB - Class 0
 
 ## Project: Ten-Thousand
 
@@ -18,7 +18,7 @@ Activate virtual environment
 Pip install pytest
 
 Run Python file:
-    python ten_thousand.game_logic.py
+    python ten_thousand.game.py
 
 Libraries:
     import random
