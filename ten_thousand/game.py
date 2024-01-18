@@ -2,21 +2,24 @@ from ten_thousand.game_logic import GameLogic
 
 class PlayGame:
     def __init__(self, roller=None):
-        print("Welcome to Ten Thousand! \nReady to play?")
+        
         self.banker = Banker()
         self.current_round = 1
         self.roller = roller
 
-        play_game = input("(y)es to play or (n)o to decline\n> ").lower()
-        if play_game == "n":
+    @staticmethod
+    def start_game():
+        play_game = input("Welcome to Ten Thousand!\nReady to play?(y)es to play or (n)o to decline\n> ").lower()
+        if play_game == "y":
+            game = PlayGame(roller=GameLogic.roll_dice)
+            game.play()
+        else:
             print("OK. Maybe another time")
-            return
 
     def play(self):
-        continue_playing = True
-        while continue_playing:
-            self.play_round()
-            continue_playing = self.should_continue()
+        while True:
+            if not self.play_round():
+                break
 
     def play_round(self):
         print(f"\nRound {self.current_round}")
@@ -35,7 +38,7 @@ class PlayGame:
                 self.banker.bank()
                 print(f"\nBanked score: {self.banker.balance}")
                 self.current_round += 1
-                break
+                break  # Breaks out of the while loop, but doesn't end the game
             elif choice == 'R':
                 try:
                     num_to_set_aside = int(input("How many dice do you want to set aside? "))
@@ -44,7 +47,9 @@ class PlayGame:
                     print("Invalid input. Please enter a number.")
             elif choice == 'Q':
                 print(f"Thanks for playing! Final score: {self.banker.balance}")
-                return
+                return False  # Ends the game
+
+        return True  # Continues the game
 
     def roll_again(self, num_dice, num_to_set_aside):
         if num_to_set_aside < num_dice:
@@ -65,13 +70,6 @@ class PlayGame:
         else:
             self.banker.shelf(score)
 
-    def should_continue(self):
-        if self.banker.balance > 0:
-            choice = input("Do you want to (C)ontinue or (Q)uit? ").upper()
-            return choice == 'C'
-        else:
-            return True
-
 
 class Banker:
     def __init__(self):
@@ -90,6 +88,4 @@ class Banker:
 
 
 if __name__ == "__main__":
-    # Pass GameLogic.roll_dice as the default roller function
-    game = PlayGame(roller=GameLogic.roll_dice)
-    game.play()
+    PlayGame.start_game()
