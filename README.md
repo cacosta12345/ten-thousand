@@ -33,4 +33,4 @@ Tests:
 
 ## Notes
 
-Game works but inputting "r" to roll again is sill a little funky so I still need to fix that
+Game works but I still need to update user choosing which die to score
