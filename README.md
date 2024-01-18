@@ -30,3 +30,7 @@ Run: pytest
 
 Tests: 
     tests/version2
+
+## Notes
+
+Game works but inputting "r" to roll again is sill a little funky so I still need to fix that
