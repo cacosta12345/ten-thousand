@@ -1,5 +1,3 @@
-# ten_thousand/play_game.pypython3 -m ten_thousand.play_game
-
 from ten_thousand.game_logic import GameLogic
 
 class PlayGame:
@@ -8,17 +6,17 @@ class PlayGame:
         self.banker = Banker()
         self.current_round = 1
         self.roller = roller
-            
+
         play_game = input("(y)es to play or (n)o to decline\n> ").lower()
         if play_game == "n":
             print("OK. Maybe another time")
-            return  
+            return
 
     def play(self):
-        while True:
+        continue_playing = True
+        while continue_playing:
             self.play_round()
-            if not self.should_continue():
-                break
+            continue_playing = self.should_continue()
 
     def play_round(self):
         print(f"\nRound {self.current_round}")
@@ -35,21 +33,24 @@ class PlayGame:
             if choice == 'B':
                 self.banker.shelf(score)
                 self.banker.bank()
-                print(f"\nCurrent unbanked score: {self.banker.shelved}")
+                print(f"\nBanked score: {self.banker.balance}")
                 self.current_round += 1
                 break
             elif choice == 'R':
-                num_to_set_aside = int(input("How many dice do you want to set aside? "))
-                self.roll_again(num_dice, num_to_set_aside)
+                try:
+                    num_to_set_aside = int(input("How many dice do you want to set aside? "))
+                    self.roll_again(num_dice, num_to_set_aside)
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
             elif choice == 'Q':
-                print("Thanks for playing! Final score:", self.banker.balance)
-                exit()
+                print(f"Thanks for playing! Final score: {self.banker.balance}")
+                return
 
     def roll_again(self, num_dice, num_to_set_aside):
         if num_to_set_aside < num_dice:
             set_aside_dice = set(input("Enter dice to set aside: "))
-            current_roll = tuple(die for die in self.roller(num_dice) if die not in set_aside_dice) if self.roller else \
-                           tuple(die for die in GameLogic.roll_dice(num_dice) if die not in set_aside_dice)
+            new_roll = self.roller(num_dice) if self.roller else GameLogic.roll_dice(num_dice)
+            current_roll = tuple(die for die in new_roll if die not in set_aside_dice)
             self.update_score(current_roll)
         else:
             print("Invalid input. You can't set aside more dice than you have.")
@@ -62,10 +63,10 @@ class PlayGame:
             print("\nBankrupt! You lose all points for this round.")
             self.banker.clear_shelved()
         else:
-            self.play_round()
+            self.banker.shelf(score)
 
     def should_continue(self):
-        if self.banker.shelved > 0:
+        if self.banker.balance > 0:
             choice = input("Do you want to (C)ontinue or (Q)uit? ").upper()
             return choice == 'C'
         else:
