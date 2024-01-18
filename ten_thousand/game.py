@@ -22,10 +22,10 @@ class PlayGame:
                 break
 
     def play_round(self):
-        print(f"\nRound {self.current_round}")
         num_dice = 6
+        print(f"\nStarting Round {self.current_round}\nRolling {num_dice} dice...")
         current_roll = self.roller(num_dice) if self.roller else GameLogic.roll_dice(num_dice)
-        print(f"\nYour roll: {current_roll}")
+        print(f"\n***{current_roll}***")
 
         score = GameLogic.calculate_score(current_roll)
         print(f"Score for this roll: {score}")
