@@ -1,8 +1,8 @@
-# LAB - Class 07
+# LAB - Class 08
 
 ## Project: Ten-Thousand
 
-## Author: Chris Acosta and pair programmed with Stephanie
+## Author: Chris Acosta
 
 ## Links and Resources
 
@@ -17,20 +17,23 @@ Activate virtual environment
 
 Pip install pytest
 
-Run Python file:
-    python ten_thousand.game.py
 
 Libraries:
     import random
         Source code: Lib/random.py
+    
+    from collections import Counter
+
+Run Python file:
+    python ten_thousand.game.py
 
 ## Tests
 
 Run: pytest
 
 Tests: 
-    tests/version2
+    tests/version3
 
 ## Notes
 
-Game works but I still need to update user choosing which die to score
+Code passes version_1 and version_2 tests. I still need to work on passing version_3 tests. The game runs on terminal correctly though

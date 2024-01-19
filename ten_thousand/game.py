@@ -11,33 +11,36 @@ def play(roller=GameLogic.roll_dice, num_rounds=20):
 
 def invite_to_play():
   
-    return input("Welcome to Ten Thousand!\nReady to play?(y)es to play or (n)o to decline\n> ").lower()
+    return input("Welcome to Ten Thousand\n(y)es to play or (n)o to decline\n> ").lower()
 
 def start_game(num_rounds, roller):
    
     banked_points = 0
     for round_num in range(1, num_rounds + 1):
-        round_points, shelved_points = do_round(round_num, roller, 0)
+        round_points, shelved_points = do_round(round_num, roller, 0, banked_points)
         if round_points == -1:
             break
         banked_points += shelved_points
         print(f"You banked {shelved_points} points in round {round_num}")
         print(f"Total score is {banked_points} points")
 
-def do_round(round_num, roller, shelved_points):
+def do_round(round_num, roller, shelved_points, total_banked_points):
     
-    print(f"\nStarting Round {round_num}")
+    print(f"Starting round {round_num}")
     num_dice = 6
 
     while num_dice > 0:
         roll = do_roll(num_dice, roller)
         formatted_roll = format_roll(roll)
+        print(f"Rolling {num_dice} dice...")
         print(formatted_roll)
 
         valid_input = False
         while not valid_input:
             keeper_string = input("Enter dice to keep, or (q)uit:\n> ")
             if keeper_string.lower() == "q":
+                total_points = total_banked_points + shelved_points
+                print(f"Thanks for playing. You earned {total_points} points")
                 return -1, shelved_points  # Special value for quit
 
             keepers = convert_keepers(keeper_string)
