@@ -1,91 +1,96 @@
 from ten_thousand.game_logic import GameLogic
+from collections import Counter
 
-class PlayGame:
-    def __init__(self, roller=None):
-        
-        self.banker = Banker()
-        self.current_round = 1
-        self.roller = roller
+def play(roller=GameLogic.roll_dice, num_rounds=20):
+  
+    response = invite_to_play()
+    if response == "y":
+        start_game(num_rounds, roller)
+    else:
+        decline_game()
 
-    @staticmethod
-    def start_game():
-        play_game = input("Welcome to Ten Thousand!\nReady to play?(y)es to play or (n)o to decline\n> ").lower()
-        if play_game == "y":
-            game = PlayGame(roller=GameLogic.roll_dice)
-            game.play()
-        else:
-            print("OK. Maybe another time")
+def invite_to_play():
+  
+    return input("Welcome to Ten Thousand\n(y)es to play or (n)o to decline\n> ").lower()
 
-    def play(self):
-        while True:
-            if not self.play_round():
-                break
+def start_game(num_rounds, roller):
+   
+    banked_points = 0
+    for round_num in range(1, num_rounds + 1):
+        round_points, shelved_points = do_round(round_num, roller, 0, banked_points)
+        if round_points == -1:
+            break
+        banked_points += shelved_points
+        print(f"You banked {shelved_points} points in round {round_num}")
+        print(f"Total score is {banked_points} points")
 
-    def play_round(self):
-        num_dice = 6
-        print(f"\nStarting Round {self.current_round}\nRolling {num_dice} dice...")
-        current_roll = self.roller(num_dice) if self.roller else GameLogic.roll_dice(num_dice)
-        print(f"\n***{current_roll}***")
+def do_round(round_num, roller, shelved_points, total_banked_points):
+    
+    print(f"Starting round {round_num}")
+    num_dice = 6
 
-        score = GameLogic.calculate_score(current_roll)
-        print(f"Score for this roll: {score}")
+    while num_dice > 0:
+        roll = do_roll(num_dice, roller)
+        formatted_roll = format_roll(roll)
+        print(f"Rolling {num_dice} dice...")
+        print(formatted_roll)
 
-        while True:
-            choice = input("Do you want to (B)ank your score, (R)oll again, or (Q)uit? ").upper()
+        valid_input = False
+        while not valid_input:
+            keeper_string = input("Enter dice to keep, or (q)uit:\n> ")
+            if keeper_string.lower() == "q":
+                total_points = total_banked_points + shelved_points
+                print(f"Thanks for playing. You earned {total_points} points")
+                return -1, shelved_points  # Special value for quit
 
-            if choice == 'B':
-                self.banker.shelf(score)
-                self.banker.bank()
-                print(f"\nBanked score: {self.banker.balance}")
-                self.current_round += 1
-                break  # Breaks out of the while loop, but doesn't end the game
-            elif choice == 'R':
-                try:
-                    num_to_set_aside = int(input("How many dice do you want to set aside? "))
-                    self.roll_again(num_dice, num_to_set_aside)
-                except ValueError:
-                    print("Invalid input. Please enter a number.")
-            elif choice == 'Q':
-                print(f"Thanks for playing! Final score: {self.banker.balance}")
-                return False  # Ends the game
+            keepers = convert_keepers(keeper_string)
+            if is_valid_input(keepers, roll):
+                valid_input = True
+            else:
+                print("Invalid input. Please enter dice values that match the roll.")
 
-        return True  # Continues the game
+        score = GameLogic.calculate_score(keepers)
+        shelved_points += score
+        num_dice -= len(keepers)
+        print(f"You have {shelved_points} unbanked points and {num_dice} dice remaining")
 
-    def roll_again(self, num_dice, num_to_set_aside):
-        if num_to_set_aside < num_dice:
-            set_aside_dice = set(input("Enter dice to set aside: "))
-            new_roll = self.roller(num_dice) if self.roller else GameLogic.roll_dice(num_dice)
-            current_roll = tuple(die for die in new_roll if die not in set_aside_dice)
-            self.update_score(current_roll)
-        else:
-            print("Invalid input. You can't set aside more dice than you have.")
+        next_action = input("(r)oll again, (b)ank your points or (q)uit:\n> ").lower()
+        if next_action == "b":
+            return shelved_points, shelved_points
+        elif next_action == "q":
+            print(f"Thanks for playing. You earned {shelved_points} points")
+            return -1, shelved_points
 
-    def update_score(self, current_roll):
-        score = GameLogic.calculate_score(current_roll)
-        print(f"\nYour new roll: {current_roll}")
-        print(f"Score for this roll: {score}")
-        if score == 0:
-            print("\nBankrupt! You lose all points for this round.")
-            self.banker.clear_shelved()
-        else:
-            self.banker.shelf(score)
+    return shelved_points, shelved_points
 
+def is_valid_input(keepers, roll):
+   
+    
+    roll_counter = Counter(roll)
+    keeper_counter = Counter(keepers)
+    for keeper in keeper_counter:
+        if keeper_counter[keeper] > roll_counter[keeper]:
+            return False
+    return True
 
-class Banker:
-    def __init__(self):
-        self.balance = 0
-        self.shelved = 0
+def do_roll(num_dice, roller):
+    
+    return roller(num_dice)
 
-    def shelf(self, points):
-        self.shelved += points
+def format_roll(roll):
+   
+    return f"*** {' '.join(map(str, roll))} ***"
 
-    def clear_shelved(self):
-        self.shelved = 0
+def convert_keepers(keeper_string):
+  
+    try:
+        return tuple(int(die) for die in keeper_string if die.isdigit())
+    except ValueError:
+        return ()  # or handle the error differently
 
-    def bank(self):
-        self.balance += self.shelved
-        self.clear_shelved()
-
+def decline_game():
+  
+    print("OK. Maybe another time")
 
 if __name__ == "__main__":
-    PlayGame.start_game()
+    play()
